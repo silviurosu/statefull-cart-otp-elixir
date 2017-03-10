@@ -1,6 +1,8 @@
 # CartStatefull
 
-**TODO: Add description**
+A basic sketch of a cart manager for an online ordering application.
+I used a GenServer for managing buyers carts
+Buyer agents are monitored with a supervisor
 
 ## Installation
 
@@ -12,8 +14,3 @@ def deps do
   [{:cart_statefull, "~> 0.1.0"}]
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/cart_statefull](https://hexdocs.pm/cart_statefull).
-

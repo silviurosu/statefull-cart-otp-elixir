@@ -1,6 +1,4 @@
 defmodule CartStatefull.Application do
-  # See http://elixir-lang.org/docs/stable/elixir/Application.html
-  # for more information on OTP Applications
   @moduledoc false
 
   use Application
@@ -8,7 +6,6 @@ defmodule CartStatefull.Application do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
-    # Define workers and child supervisors to be supervised
     children = [
       worker(CartStatefull.Buyers.Manager, []),
       supervisor(CartStatefull.Buyers.BuyerSupervisor, []),
