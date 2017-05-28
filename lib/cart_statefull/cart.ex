@@ -33,7 +33,7 @@ defmodule CartStatefull.Cart do
   # HANDLERS for GenServer actions
   def handle_call({:list}, _from, %{items: items} = cart) do
     list = Enum.map(items, fn({_id, name}) -> name end)
-    {:reply, list, %{cart | items: list}}
+    {:reply, list, cart}
   end
 
   def handle_cast({:add_item, item}, %{items: items} = cart) do
