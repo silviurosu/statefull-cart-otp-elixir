@@ -1,5 +1,10 @@
 defmodule CartStatefull.Application do
-  @moduledoc false
+  @moduledoc """
+  Supervisor for the whole app
+  It supervises: CartManager and CartSupervisor
+  Supervising is done using one_for_one strategy (if a process terminates only that process is restarted)
+  Childrens are always restarted in case they fail and terminate
+  """
 
   use Application
 
@@ -7,9 +12,8 @@ defmodule CartStatefull.Application do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(CartStatefull.Buyers.Manager, []),
-      supervisor(CartStatefull.Buyers.BuyerSupervisor, []),
-      supervisor(Registry, [:unique, :buyers_registry])
+      worker(CartStatefull.CartManager, []),
+      supervisor(CartStatefull.CartSupervisor, [])
     ]
     opts = [strategy: :one_for_one, name: CartStatefull.Supervisor]
     Supervisor.start_link(children, opts)
