@@ -5,6 +5,8 @@ defmodule CartStatefull.Cart do
 
   use GenServer
 
+  @default_timeout 24 * 60 * 60 * 1000 # 24 hours
+
   def start_link() do
     GenServer.start_link(__MODULE__, %{items: []})
   end
@@ -33,15 +35,20 @@ defmodule CartStatefull.Cart do
   # HANDLERS for GenServer actions
   def handle_call({:list}, _from, %{items: items} = cart) do
     list = Enum.map(items, fn({_id, name}) -> name end)
-    {:reply, list, cart}
+    {:reply, list, cart, @default_timeout}
   end
 
   def handle_cast({:add_item, item}, %{items: items} = cart) do
-    {:noreply, %{cart | items: [item | items]}}
+    {:noreply, %{cart | items: [item | items]}, @default_timeout}
   end
 
   def handle_cast({:remove_item, item_id}, %{items: items} = cart) do
     new_items = Enum.reject(items, fn({id, name}) -> item_id == id end)
-    {:noreply, %{cart | items: new_items}}
+    {:noreply, %{cart | items: new_items}, @default_timeout}
+  end
+
+  def handle_info(:timeout, state) do
+    #TODO - persist current cart before shutting down
+    {:stop, :timeout, state}
   end
 end
