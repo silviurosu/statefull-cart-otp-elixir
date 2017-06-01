@@ -12,8 +12,8 @@ defmodule CartStatefull.Application do
     import Supervisor.Spec, warn: false
 
     children = [
-      worker(CartStatefull.CartManager, []),
-      supervisor(CartStatefull.CartSupervisor, [])
+      supervisor(CartStatefull.CartSupervisor, []),
+      supervisor(Registry, [:unique, :cart_process_registry])
     ]
     opts = [strategy: :one_for_one, name: CartStatefull.Supervisor]
     Supervisor.start_link(children, opts)
