@@ -1,7 +1,7 @@
 defmodule CartStatefull.CartSupervisor do
   @moduledoc """
   Supervisor for Carts processes
-  Supervising is done using simple_one_for_one strategy a simplified version of
+  Supervising is done using simple_one_for_one strategy, a simplified version of
   one_for_one better suited to many dynamically started childrens
 
   Cart workers are temporary (when they complete they are not restarted)
@@ -24,7 +24,8 @@ defmodule CartStatefull.CartSupervisor do
   end
 
   @doc """
-  Start a new cart process
+  Start a new cart process.
+  Generates a uuid and sends this uuid to Cart process
   """
   @spec new_cart :: {:ok, String.t} | {:error, :process_already_exists}
   def new_cart do
@@ -57,7 +58,7 @@ defmodule CartStatefull.CartSupervisor do
     __MODULE__
     |> Supervisor.which_children()
     |> Enum.map(&cart_process_uuid/1)
-    |> Enum.sort
+    # |> Enum.sort
   end
 
   defp cart_process_uuid({_, cart_proc_pid, _, _}) do
@@ -66,9 +67,7 @@ defmodule CartStatefull.CartSupervisor do
       |> List.first
   end
 
-  @doc """
-    Returns the pid for the `uuid` stored in the registry
-  """
+  # Returns the pid for the `uuid` stored in the registry
   defp find_cart_process(uuid) do
     case Registry.lookup(@cart_registry_name, uuid) do
       [{pid, _}] -> pid

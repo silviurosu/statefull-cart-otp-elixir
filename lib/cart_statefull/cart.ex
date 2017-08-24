@@ -16,7 +16,7 @@ defmodule CartStatefull.Cart do
   defstruct [:items, :uuid, :buyer]
 
   def start_link(uuid) when is_binary(uuid) do
-    GenServer.start_link(__MODULE__, [uuid], name: name_from_registry(uuid))
+    GenServer.start_link(__MODULE__, [uuid], name: via_tuple(uuid))
   end
 
   def init([uuid]) do
@@ -37,7 +37,7 @@ defmodule CartStatefull.Cart do
   @spec cart_content(String.t) :: {:ok, list} | {:error, String.t}
   def cart_content(uuid) do
     if (cart_process_exist?(uuid)) do
-      GenServer.call(name_from_registry(uuid), {:list})
+      GenServer.call(via_tuple(uuid), {:list})
     else
       {:error, @cart_not_found_message}
     end
@@ -49,7 +49,7 @@ defmodule CartStatefull.Cart do
   @spec add_item(String.t, {integer, String.t}) :: :ok | {:error, String.t}
   def add_item(uuid, item) do
     if (cart_process_exist?(uuid)) do
-      GenServer.cast(name_from_registry(uuid), {:add_item, item})
+      GenServer.cast(via_tuple(uuid), {:add_item, item})
       :ok
     else
       {:error, @cart_not_found_message}
@@ -62,7 +62,7 @@ defmodule CartStatefull.Cart do
   @spec add_buyer(String.t, Buyer.t) :: :ok | {:error, String.t}
   def add_buyer(uuid, %Buyer{} = buyer) do
     if (cart_process_exist?(uuid)) do
-      GenServer.cast(name_from_registry(uuid), {:add_buyer, buyer})
+      GenServer.cast(via_tuple(uuid), {:add_buyer, buyer})
       :ok
     else
       {:error, @cart_not_found_message}
@@ -75,7 +75,7 @@ defmodule CartStatefull.Cart do
   @spec remove_item(String.t, integer) :: :ok | {:error, String.t}
   def remove_item(uuid, item_id) do
     if (cart_process_exist?(uuid)) do
-      GenServer.cast(name_from_registry(uuid), {:remove_item, item_id})
+      GenServer.cast(via_tuple(uuid), {:remove_item, item_id})
       :ok
     else
       {:error, @cart_not_found_message}
@@ -123,10 +123,8 @@ defmodule CartStatefull.Cart do
     end
   end
 
-  @doc """
-  Registry lookup handler
-  """
-  defp name_from_registry(uuid) do
+  # Registry lookup handler
+  defp via_tuple(uuid) do
     {:via, Registry, {@cart_registry_name, uuid}}
   end
 end
