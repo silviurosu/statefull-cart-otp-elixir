@@ -1,10 +1,12 @@
 defmodule CartStatefull.Mixfile do
   use Mix.Project
 
+  @version "0.1.0"
+
   def project do
     [app: :cart_statefull,
-     version: "0.1.0",
-     elixir: "~> 1.4",
+     version: @version,
+     elixir: "~> 1.5.1",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps()]
@@ -17,7 +19,7 @@ defmodule CartStatefull.Mixfile do
 
   defp deps do
     [
-      {:uuid, "~> 1.1"}
+      {:uuid, ">= 1.1.7"}
     ]
   end
 end
