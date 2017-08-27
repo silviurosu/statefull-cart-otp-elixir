@@ -1,36 +1,20 @@
 # CartStatefull
 
-An Elixir based cart manager for an online ordering application.
-This is a demo application used for developing elixir skills.
-I used many features from Elixir that I thought are appropiate (GenServer, GenStage, Flow)
+An Elixir OTP based cart manager for an online ordering application. When we have a new user we create a new cart. Cart will be kept in memory for a specific timeout in case the user does no action in the cart. Each action done by user refreshes the timeout.
 
-## Functional specifications
 
-Having this functional requirements:
+All the external methods are in CartStatefull module:
 
-- Each visitor of the site will have a shopping cart created when he adds first product
-- He will be able to add as many products in the cart as needed
-- If he does not complete the cart we need to notify him via email at a later time
-- When he completes the cart we need to close it and store it for tracking
--
+## Functionality already implemented
 
-## Techical description
+- create a new cart
+- terminate cart by uuid
+- get all uuids for active carts
+- get all the cart content (buyer, items)
+- add item to cart
+- remove item from cart
+- add buyer to cart
 
-Techical approach will be something like this:
+## This to do
 
-- When the user adds first product we will instantiate the cart
-- For performance reasons we will store the cart in memory using GenServer
-- From time to time we need to persist the cart in DB for recovery in case application is down
-- After a timeout of inactivity we will remove the cart from memory and we will save it in DB
-- I used websockes for client-server communication
-
-## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `cart_statefull` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [{:cart_statefull, "~> 0.1.0"}]
-end
-```
+- persist carts from time to time to recover in case of failure
