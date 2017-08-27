@@ -6,17 +6,15 @@ defmodule CartStatefull.Cart do
   use GenServer
   require Logger
 
-  alias CartStatefull.Buyer
+  alias CartStatefull.RegistryHelper
 
-  @cart_registry_name :cart_process_registry
-  @cart_not_found_message "Cart not found"
   @default_timeout 24 * 60 * 60 * 1000 # 24 hours. The process will terminate after
                                        # this timeout of inactivity
 
   defstruct [:items, :uuid, :buyer]
 
   def start_link(uuid) when is_binary(uuid) do
-    GenServer.start_link(__MODULE__, [uuid], name: via_tuple(uuid))
+    GenServer.start_link(__MODULE__, [uuid], name: RegistryHelper.via_tuple(uuid))
   end
 
   def init([uuid]) do
@@ -29,58 +27,6 @@ defmodule CartStatefull.Cart do
 
     # Set initial state and return from `init`
     {:ok, %__MODULE__{uuid: uuid, items: []}}
-  end
-
-  @doc """
-    List cart content
-  """
-  @spec cart_content(String.t) :: {:ok, list} | {:error, String.t}
-  def cart_content(uuid) when is_binary(uuid) do
-    if (cart_process_exist?(uuid)) do
-      GenServer.call(via_tuple(uuid), {:list})
-    else
-      {:error, @cart_not_found_message}
-    end
-  end
-
-  @doc """
-    Add item to cart. Item format: {id, name}
-  """
-  @spec add_item(String.t, {integer, String.t}) :: :ok | {:error, String.t}
-  def add_item(uuid, {id, name}=item) when is_binary(uuid) and is_integer(id)
-                                      and is_binary(name) do
-    if (cart_process_exist?(uuid)) do
-      GenServer.cast(via_tuple(uuid), {:add_item, item})
-      :ok
-    else
-      {:error, @cart_not_found_message}
-    end
-  end
-
-  @doc """
-    Add buyer to cart.
-  """
-  @spec add_buyer(String.t, Buyer.t) :: :ok | {:error, String.t}
-  def add_buyer(uuid, %Buyer{} = buyer) when is_binary(uuid) do
-    if (cart_process_exist?(uuid)) do
-      GenServer.cast(via_tuple(uuid), {:add_buyer, buyer})
-      :ok
-    else
-      {:error, @cart_not_found_message}
-    end
-  end
-
-  @doc """
-    Remove item from cart by id
-  """
-  @spec remove_item(String.t, integer) :: :ok | {:error, String.t}
-  def remove_item(uuid, item_id) when is_binary(uuid) and is_integer(item_id) do
-    if (cart_process_exist?(uuid)) do
-      GenServer.cast(via_tuple(uuid), {:remove_item, item_id})
-      :ok
-    else
-      {:error, @cart_not_found_message}
-    end
   end
 
   # HANDLERS for GenServer actions
@@ -115,17 +61,5 @@ defmodule CartStatefull.Cart do
     #TODO - persist current cart before shutting down
     Logger.info("Cart Process manualy stopped. uuid: #{state.uuid}")
     {:stop, :normal, state}
-  end
-
-  defp cart_process_exist?(uuid) do
-    case Registry.lookup(@cart_registry_name, uuid) do
-      [{_pid, _}] -> true
-      [] -> false
-    end
-  end
-
-  # Registry lookup handler
-  defp via_tuple(uuid) do
-    {:via, Registry, {@cart_registry_name, uuid}}
   end
 end

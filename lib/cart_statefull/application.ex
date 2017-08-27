@@ -1,7 +1,7 @@
 defmodule CartStatefull.Application do
   @moduledoc """
   Supervisor for the whole app
-  It supervises: CartManager and CartSupervisor
+  It supervises: CartSupervisor, and Registry
   Supervising is done using one_for_one strategy (if a process terminates only that process is restarted)
   Childrens are always restarted in case they fail and terminate
   """

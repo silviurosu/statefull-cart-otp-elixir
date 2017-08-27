@@ -53,12 +53,12 @@ defmodule CartStatefull.CartSupervisor do
   @doc """
   Get all uuids for active carts
   """
-  @spec current_active_carts_uuids :: list(String.t)
-  def current_active_carts_uuids do
-    __MODULE__
-    |> Supervisor.which_children()
-    |> Enum.map(&cart_process_uuid/1)
-    # |> Enum.sort
+  @spec get_active_carts_uuids :: {:ok, list(String.t)} | {:error, String.t}
+  def get_active_carts_uuids do
+    uuids = __MODULE__
+            |> Supervisor.which_children()
+            |> Enum.map(&cart_process_uuid/1)
+    {:ok, uuids}
   end
 
   defp cart_process_uuid({_, cart_proc_pid, _, _}) do
