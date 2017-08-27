@@ -35,7 +35,7 @@ defmodule CartStatefull.Cart do
     List cart content
   """
   @spec cart_content(String.t) :: {:ok, list} | {:error, String.t}
-  def cart_content(uuid) do
+  def cart_content(uuid) when is_binary(uuid) do
     if (cart_process_exist?(uuid)) do
       GenServer.call(via_tuple(uuid), {:list})
     else
@@ -47,7 +47,8 @@ defmodule CartStatefull.Cart do
     Add item to cart. Item format: {id, name}
   """
   @spec add_item(String.t, {integer, String.t}) :: :ok | {:error, String.t}
-  def add_item(uuid, item) do
+  def add_item(uuid, {id, name}=item) when is_binary(uuid) and is_integer(id)
+                                      and is_binary(name) do
     if (cart_process_exist?(uuid)) do
       GenServer.cast(via_tuple(uuid), {:add_item, item})
       :ok
@@ -60,7 +61,7 @@ defmodule CartStatefull.Cart do
     Add buyer to cart.
   """
   @spec add_buyer(String.t, Buyer.t) :: :ok | {:error, String.t}
-  def add_buyer(uuid, %Buyer{} = buyer) do
+  def add_buyer(uuid, %Buyer{} = buyer) when is_binary(uuid) do
     if (cart_process_exist?(uuid)) do
       GenServer.cast(via_tuple(uuid), {:add_buyer, buyer})
       :ok
@@ -73,7 +74,7 @@ defmodule CartStatefull.Cart do
     Remove item from cart by id
   """
   @spec remove_item(String.t, integer) :: :ok | {:error, String.t}
-  def remove_item(uuid, item_id) do
+  def remove_item(uuid, item_id) when is_binary(uuid) and is_integer(item_id) do
     if (cart_process_exist?(uuid)) do
       GenServer.cast(via_tuple(uuid), {:remove_item, item_id})
       :ok

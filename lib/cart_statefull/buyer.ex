@@ -2,6 +2,7 @@ defmodule CartStatefull.Buyer do
   @moduledoc """
   Buyer struct
   """
+  @enforce_keys [:name, :email]
 
   defstruct [:name, :email]
 
